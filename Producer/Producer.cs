@@ -39,7 +39,7 @@ namespace Producer
             while(true){
                 try
                 {
-                    BrokeredMessage bmsg = new BrokeredMessage(message);
+                    BrokeredMessage bmsg = new BrokeredMessage(g);
                     queueClient.Send(bmsg);
                     Console.Out.WriteLine("Sent message with id {0}", bmsg.MessageId);
                     break;

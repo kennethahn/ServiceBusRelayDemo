@@ -28,12 +28,22 @@ namespace Consumer
                     if (msgCount > 0) { Console.Out.WriteLine("The queue has " + msgCount + " messages waiting"); }
                     var msg = queueClient.Receive(new TimeSpan(1, 0, 0));
                     Console.Out.WriteLine("Received message with id {0}", msg.MessageId);
-                    Console.Out.WriteLine("Message is: {0}", msg.GetBody<string>());
-                    Console.Out.WriteLine("Message is locked with token: {0}", msg.LockToken.ToString());
+                    Messages.Greeting greeting = msg.GetBody<Messages.Greeting>();
+                    Console.Out.WriteLine("Message for: {0}", greeting.Name );
+                    Console.Out.WriteLine("{0}\n", greeting.Message);
                     if (queueClient.Mode == ReceiveMode.PeekLock)
                     {
-                        queueClient.Complete(msg.LockToken);
+                        try
+                        {
+                            Console.Out.WriteLine("Completing message with lock token {0}", msg.LockToken);
+                            queueClient.Complete(msg.LockToken);
+                        }
+                        catch (MessageLockLostException)
+                        {
+                            Console.Out.WriteLine("Oh noes! We lost the lock on the message. ");
+                        }
                     }
+                    Console.Out.WriteLine();
                 }
             }
             finally
